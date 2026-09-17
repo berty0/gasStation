@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Report visualizzazioni — BenzinaBergamo (solo admin)">
+  <title>Report visualizzazioni — BenzinaBergamo</title>
+  <link rel="icon" type="image/svg+xml" href="../icons/droplet.svg">
+  <meta name="theme-color" content="#0071e3">
+  <link rel="stylesheet" href="css/account.css">
+</head>
+<body>
+  <div class="report-page">
+    <header class="report-topbar">
+      <h1>Report visualizzazioni</h1>
+      <a href="../index.html" class="back-link">← Torna alla mappa</a>
+    </header>
+
+    <main class="report-wrap">
+      <div id="report-loading" class="report-msg">Caricamento...</div>
+
+      <div id="report-content" hidden>
+        <section class="report-stats">
+          <div class="stat-card">
+            <div class="stat-value" id="stat-total">—</div>
+            <div class="stat-label">Visite totali</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-guests">—</div>
+            <div class="stat-label">Ospiti (non loggati)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-users">—</div>
+            <div class="stat-label">Utenti registrati unici</div>
+          </div>
+        </section>
+
+        <section class="report-section" id="section-users">
+          <h2>Per utente registrato</h2>
+          <div class="report-table-wrap">
+            <table class="report-table" id="table-users">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Email</th>
+                  <th class="num">Visite</th>
+                  <th>Ultima visita</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="users-empty" class="report-msg" hidden>Nessun utente registrato con visite.</div>
+        </section>
+
+        <section class="report-section" id="section-recent">
+          <h2>Visite recenti (ultime 60)</h2>
+          <div class="report-table-wrap">
+            <table class="report-table" id="table-recent">
+              <thead>
+                <tr>
+                  <th>Data/Ora</th>
+                  <th>Utente</th>
+                  <th>Tipo</th>
+                  <th>Pagina</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="recent-empty" class="report-msg" hidden>Nessuna visita recente.</div>
+        </section>
+      </div>
+
+      <div id="report-error" class="report-msg" hidden></div>
+    </main>
+  </div>
+
+  <script src="js/report.js"></script>
+</body>
+</html>

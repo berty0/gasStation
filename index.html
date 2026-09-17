@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Mappa interattiva dei prezzi dei carburanti nei distributori della provincia di Bergamo. Dati open MIMIT aggiornati ogni giorno.">
+  <title>BenzinaBergamo — Prezzi carburanti provincia di Bergamo</title>
+  <link rel="icon" type="image/svg+xml" href="icons/droplet.svg">
+  <meta name="theme-color" content="#0071e3">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BenzinaBG">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin="">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" crossorigin="">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="account/css/account.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ─── Sidebar / pannello laterale ─────────────────────────── -->
+    <aside id="sidebar" aria-label="Pannello prezzi carburanti">
+      <header class="brand">
+        <div class="brand-text">
+          <h1>BenzinaBergamo</h1>
+          <p class="sub">Prezzi carburanti · Provincia di Bergamo</p>
+        </div>
+        <div id="user-area" class="user-area"></div>
+      </header>
+
+      <div id="status" role="status"></div>
+
+      <!-- ─── Posizione utente ──────────────────────────────── -->
+      <div id="location-box">
+        <div class="location-field">
+          <input type="text" id="location-input" aria-label="Inserisci il tuo indirizzo">
+          <button id="location-btn" type="button" title="Cerca posizione" aria-label="Cerca posizione">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+          </button>
+        </div>
+        <div id="location-status" class="location-status" hidden></div>
+
+      </div>
+
+      <details id="filters-box" open>
+        <summary>Filtri</summary>
+        <div id="filters">
+          <label class="field">
+            <span>Carburante</span>
+            <select id="filter-fuel"></select>
+          </label>
+
+          <label class="field">
+            <span>Raggio di ricerca
+              <output id="radius-label" for="filter-radius"></output>
+            </span>
+            <input type="range" id="filter-radius" min="2" max="50" step="1" value="15">
+          </label>
+
+          <div class="field check">
+            <input type="checkbox" id="filter-unlimited" checked>
+            <label for="filter-unlimited">Raggio illimitato</label>
+          </div>
+
+          <div class="field check">
+            <input type="checkbox" id="filter-self" checked>
+            <label for="filter-self">Solo self service (per la classifica)</label>
+          </div>
+
+          <div class="field check">
+            <input type="checkbox" id="filter-favorites">
+            <label for="filter-favorites">Solo preferiti</label>
+          </div>
+
+          <label class="field">
+            <span>Cerca</span>
+            <input type="text" id="filter-search" placeholder="Comune, via, nome...">
+          </label>
+
+          <div class="field">
+            <span>Marche</span>
+            <div id="filter-brands" class="chips"></div>
+          </div>
+        </div>
+      </details>
+
+      <details id="legend-box" open>
+        <summary>Prezzo (€/L)</summary>
+        <div id="legend"></div>
+      </details>
+
+      <details id="fav-box">
+        <summary>Preferiti <span class="fav-count" id="fav-count">0</span></summary>
+        <nav id="fav-list" aria-label="Distributori preferiti">
+          <div id="fav-empty">Nessun preferito. Clicca la stella per aggiungerne.</div>
+        </nav>
+      </details>
+
+      <div id="ranking-header">
+        <h2 id="ranking-title">Distributori</h2>
+        <span id="ranking-count" class="muted"></span>
+        <div class="sort-toggle" role="group" aria-label="Ordinamento classifica">
+          <button id="sort-asc" class="sort-btn active" type="button" data-sort="asc" aria-pressed="true" title="Più economici prima">↓</button>
+          <button id="sort-desc" class="sort-btn" type="button" data-sort="desc" aria-pressed="false" title="Più cari prima">↑</button>
+        </div>
+        <button id="btn-export" type="button" class="export-btn" title="Esporta classifica come CSV">↓ CSV</button>
+      </div>
+      <nav id="ranking" aria-label="Classifica distributori"></nav>
+
+      <footer class="foot">
+        <p>Fonte: <a href="https://www.mimit.gov.it/it/prezzo-carburanti" target="_blank" rel="noopener">MIMIT open data</a> · dati aggiornati ogni giorno</p>
+      </footer>
+    </aside>
+
+    <!-- ─── Mappa ───────────────────────────────────────────────── -->
+    <main id="map" aria-label="Mappa dei distributori"></main>
+
+    <button id="locate-btn" title="Mostra la mia posizione" aria-label="Mostra la mia posizione">◎</button>
+    <button id="drawer-toggle" title="Pannello filtri" aria-label="Apri o chiudi il pannello">☰</button>
+    <div id="drawer-backdrop" hidden></div>
+
+    <div id="toast" role="status" hidden></div>
+  </div>
+
+  <!-- Leaflet + plugin cluster (CDN) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" crossorigin=""></script>
+
+  <!-- Moduli applicativi: ordine = dipendenze -->
+  <script src="js/config.js"></script>
+  <script src="js/geo.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/favorites.js"></script>
+  <script src="account/js/auth.js"></script>
+  <script src="js/ranking.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+  
+</body>
+</html>

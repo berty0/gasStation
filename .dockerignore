@@ -1,0 +1,14 @@
+# Dati runtime locale (il server li ricostruisce in cloud)
+data/
+node_modules/
+test-results/
+playwright/
+
+# Artefatti di sviluppo
+*.log
+screenshot_verified.png
+test_sort.spec.js
+.git/
+Dockerfile
+.dockerignore
+README*.md

@@ -1,0 +1,10 @@
+# cache dati runtime (ricostruito da server.js)
+data/
+
+node_modules/
+*.log
+
+# artefatti di sviluppo/test (non vanno in produzione)
+test-results/
+test_sort.spec.js
+screenshot_verified.png

@@ -1,0 +1,16 @@
+{
+  "name": "benzina-bergamo",
+  "version": "1.0.0",
+  "description": "Dashboard interattiva prezzi carburanti provincia di Bergamo (dati open MIMIT)",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}
